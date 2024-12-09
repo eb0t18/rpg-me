@@ -1,84 +1,120 @@
-/**
- * Copyright 2024 eb0t18
- * @license Apache-2.0, see LICENSE for full text.
- */
+
 import { LitElement, html, css } from "lit";
 import { DDDSuper } from "@haxtheweb/d-d-d/d-d-d.js";
 import { I18NMixin } from "@haxtheweb/i18n-manager/lib/I18NMixin.js";
+import "@haxtheweb/rpg-character/rpg-character.js";
+import "wired-elements";
 
-/**
- * `rpg-me`
- * 
- * @demo index.html
- * @element rpg-me
- */
 export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
-
   static get tag() {
     return "rpg-me";
   }
 
   constructor() {
     super();
-    this.title = "";
-    this.t = this.t || {};
-    this.t = {
-      ...this.t,
-      title: "Title",
+    this.title = "Customize Your RPG Character!";
+    this.settings = {
+      seed: "00000000",
+      base: 0, // boolean, 0 = no, 1= yes
+      face: 0,
+      faceitem: 0,
+      hair: 0,
+      pants: 0,
+      shirt: 0,
+      skin: 0,
+      glasses: false,
+      hatColor: 0,
+      size: 200,
+      name: "",
+      fire: false,
+      walking: false,
     };
-    this.registerLocalization({
-      context: this,
-      localesPath:
-        new URL("./locales/rpg-me.ar.json", import.meta.url).href +
-        "/../",
-      locales: ["ar", "es", "hi", "zh"],
-    });
   }
 
-  // Lit reactive properties
   static get properties() {
     return {
       ...super.properties,
-      title: { type: String },
+      title: {type: String},
+      settings: { type: Object },
     };
   }
 
-  // Lit scoped styles
   static get styles() {
-    return [super.styles,
-    css`
-      :host {
-        display: block;
-        color: var(--ddd-theme-primary);
-        background-color: var(--ddd-theme-accent);
-        font-family: var(--ddd-font-navigation);
-      }
-      .wrapper {
-        margin: var(--ddd-spacing-2);
-        padding: var(--ddd-spacing-4);
-      }
-      h3 span {
-        font-size: var(--rpg-me-label-font-size, var(--ddd-font-size-s));
-      }
-    `];
+    return [
+      super.styles,
+      css`
+        :host {
+          display: block;
+          font-family: var(--ddd-font-navigation);
+        }
+        .container {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          align-items: flex-start;
+          padding: 20px;
+        }
+        label {
+          font-size: 20px;
+          font-weight: bold;
+          margin-bottom: 10px;
+        }
+        wired-input,
+        wired-checkbox,
+        wired-slider {
+          display: block;
+          margin-bottom: 20px;
+          max-width: 200px;
+        }
+        .options {
+          min-width: 200px;
+          text-align: left;
+        }
+      `,
+    ];
   }
 
-  // Lit render the HTML
   render() {
     return html`
-<div class="wrapper">
-  <h3><span>${this.t.title}:</span> ${this.title}</h3>
-  <slot></slot>
-</div>`;
-  }
+      <div class="container">
+          <rpg-character
+            base="${this.settings.base}"
+            face="${this.settings.face}"
+            faceitem="${this.settings.faceitem}"
+            hair="${this.settings.hair}"
+            pants="${this.settings.pants}"
+            shirt="${this.settings.shirt}"
+            skin="${this.settings.skin}"
+            hatColor="${this.settings.hatColor}"
+          ></rpg-character>
+    <div class = options>
+      <label> Base (Hair or no?)</label>
+      <wired-checkbox></wired-checkbox>
+      <label> Walking? </label>
+      <wired-checkbox></wired-checkbox>
+      <label> On fire? </label>
+      <wired-checkbox></wired-checkbox>
+      <label> Face </label>
+      <wired-slider></wired-slider>
+      <label> Face Item </label>
+      <wired-slider></wired-slider>
+      <label> Hair </label>
+      <wired-slider></wired-slider>
+      <label> Pants </label>
+      <wired-slider></wired-slider>
+      <label> Shirt </label>
+      <wired-slider></wired-slider>
+      <label> Skin </label>
+      <wired-slider></wired-slider>
+      <label> Hat Color </label>
+      <wired-slider></wired-slider>
 
-  /**
-   * haxProperties integration via file reference
-   */
-  static get haxProperties() {
-    return new URL(`./lib/${this.tag}.haxProperties.json`, import.meta.url)
-      .href;
+    
+     </div> 
+     </div>
+        
+    `;
   }
 }
 
-globalThis.customElements.define(RpgMe.tag, RpgMe);
+customElements.define(RpgMe.tag, RpgMe);
