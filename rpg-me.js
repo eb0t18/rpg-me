@@ -13,9 +13,9 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
   constructor() {
     super();
     this.title = "Customize Your RPG Character!";
+    seed: "00000000",
     this.settings = {
-      seed: "00000000",
-      base: 0, // boolean, 0 = no, 1= yes
+      base: 0, // 0 for no hair, 1 for hair
       face: 0,
       faceitem: 0,
       hair: 0,
@@ -33,9 +33,9 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
 
   static get properties() {
     return {
-      ...super.properties,
       title: {type: String},
-      settings: { type: Object },
+      settings: {type: String},
+      seed: {type: String},
     };
   }
 
@@ -87,34 +87,68 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
             skin="${this.settings.skin}"
             hatColor="${this.settings.hatColor}"
           ></rpg-character>
-    <div class = options>
-      <label> Base (Hair or no?)</label>
-      <wired-checkbox></wired-checkbox>
-      <label> Walking? </label>
-      <wired-checkbox></wired-checkbox>
-      <label> On fire? </label>
-      <wired-checkbox></wired-checkbox>
-      <label> Face </label>
-      <wired-slider></wired-slider>
-      <label> Face Item </label>
-      <wired-slider></wired-slider>
-      <label> Hair </label>
-      <wired-slider></wired-slider>
-      <label> Pants </label>
-      <wired-slider></wired-slider>
-      <label> Shirt </label>
-      <wired-slider></wired-slider>
-      <label> Skin </label>
-      <wired-slider></wired-slider>
-      <label> Hat Color </label>
-      <wired-slider></wired-slider>
 
-    
+
+
+    <div class = options>
+      <label>Face: </label>
+      ${this.wiredSlider("face", 0, 5)}
+
+      <label>Face Item: </label>
+      ${this.wiredSlider("faceitem", 0, 9)}
+
+      <label>Pants: </label>
+      ${this.wiredSlider("pants", 0, 9)}
+
+      <label>Shirt: </label>
+      ${this.wiredSlider("shirt", 0, 9)}
+
+      <label>Skin: </label>
+      ${this.wiredSlider("skin", 0, 9)}
+
+      <label>Size: </label>
+      ${this.wiredSlider("size", 100, 600)}
+
+      <label>hair: </label>
+      ${this.wiredSlider("hair", 0, 9)}
      </div> 
      </div>
         
     `;
   }
+
+wiredSlider(feature, minimum, maximum){
+  return html`
+  <wired-slider
+  value="${this.settings[feature]}"
+  min ="${minimum}"
+  max = "${maximum}"
+  step = "1"
+  @change="${(e) => this.updateCharacter(property, e.target.value)}"
+  ></wired-slider>`
 }
 
+
+updateCharacter(property, value) {
+  this.settings = { 
+    ...this.settings, 
+    [property]: property === "size" ? parseInt(value, 10) : parseInt(value, 10) 
+  };
+  this.updateSeed();
+}
+
+updateSeed() {
+  const {
+    base,
+    face,
+    faceitem,
+    hair,
+    pants,
+    shirt,
+    skin,
+    size,
+  } = this.settings;
+  this.seed = `${base}${face}${faceitem}${hair}${pants}${shirt}${skin}${size}`;
+}
+}
 customElements.define(RpgMe.tag, RpgMe);
