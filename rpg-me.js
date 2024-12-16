@@ -13,7 +13,7 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
   constructor() {
     super();
     this.title = "Customize Your RPG Character!";
-    seed: "00000000",
+    this.seed= "00000000";
     this.settings = {
       base: 0, // 0 for no hair, 1 for hair
       face: 0,
@@ -34,7 +34,7 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
   static get properties() {
     return {
       title: {type: String},
-      settings: {type: String},
+      settings: {type: Object},
       seed: {type: String},
     };
   }
@@ -65,10 +65,14 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
           display: block;
           margin-bottom: 20px;
           max-width: 200px;
+          opacity:1;
         }
         .options {
           min-width: 200px;
           text-align: left;
+        }
+        rpg-character{
+        transition: width 0.3s ease, height 0.3s ease;
         }
       `,
     ];
@@ -77,6 +81,7 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
   render() {
     return html`
       <div class="container">
+      <div class = "seed"><h2>${this.seed}</h2></div>
           <rpg-character
             base="${this.settings.base}"
             face="${this.settings.face}"
@@ -86,47 +91,61 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
             shirt="${this.settings.shirt}"
             skin="${this.settings.skin}"
             hatColor="${this.settings.hatColor}"
+            style="width: ${this.settings.size}px; height: ${this.settings.size}px;"
           ></rpg-character>
 
 
 
     <div class = options>
-      <label>Face: </label>
-      ${this.wiredSlider("face", 0, 5)}
-
-      <label>Face Item: </label>
-      ${this.wiredSlider("faceitem", 0, 9)}
-
-      <label>Pants: </label>
-      ${this.wiredSlider("pants", 0, 9)}
-
-      <label>Shirt: </label>
-      ${this.wiredSlider("shirt", 0, 9)}
-
-      <label>Skin: </label>
-      ${this.wiredSlider("skin", 0, 9)}
-
-      <label>Size: </label>
-      ${this.wiredSlider("size", 100, 600)}
-
-      <label>hair: </label>
-      ${this.wiredSlider("hair", 0, 9)}
+        <label>Has hair? </label>
+        ${this.wiredCheckbox("base")}
+        <label>Face: </label>
+        ${this.wiredSlider("face", 0, 5)}
+        <label>Face Item: </label>
+        ${this.wiredSlider("faceitem", 0, 9)}
+        <label>Hair Color: </label>
+        ${this.wiredSlider("hair", 0, 9)}
+        <label>Pants: </label>
+        ${this.wiredSlider("pants", 0, 9)}
+        <label>Shirt: </label>
+        ${this.wiredSlider("shirt", 0, 9)}
+        <label>Skin: </label>
+        ${this.wiredSlider("skin", 0, 9)}
+        <label>Hat Color: </label>
+        ${this.wiredSlider("hatColor", 0, 9)}
+        <label>Size: </label>
+        ${this.wiredSlider("size", 100, 600)}
+       
      </div> 
      </div>
         
     `;
   }
 
-wiredSlider(feature, minimum, maximum){
-  return html`
-  <wired-slider
-  value="${this.settings[feature]}"
-  min ="${minimum}"
-  max = "${maximum}"
-  step = "1"
-  @change="${(e) => this.updateCharacter(property, e.target.value)}"
-  ></wired-slider>`
-}
+  wiredSlider(property, min, max) {
+    return html`
+      <div class="slider-container">
+        <wired-slider
+          min="${min}"
+          max="${max}"
+          step="1"
+          value="${this.settings[property]}"
+          @change="${(e) => this.updateCharacter(property, e.target.value)}"
+        ></wired-slider>
+      </div>
+    `;
+  }
+
+  wiredCheckbox(property){
+    return html`
+  <wired-checkbox
+      ?checked="${this.settings.base === 1}"
+      @change="${(e) =>this.updateCharacter('base', e.target.checked ? 1 : 0)}">
+  </wired-checkbox>
+    `
+    
+  }
+
 
 
 updateCharacter(property, value) {
@@ -138,17 +157,8 @@ updateCharacter(property, value) {
 }
 
 updateSeed() {
-  const {
-    base,
-    face,
-    faceitem,
-    hair,
-    pants,
-    shirt,
-    skin,
-    size,
-  } = this.settings;
-  this.seed = `${base}${face}${faceitem}${hair}${pants}${shirt}${skin}${size}`;
+  const { base, face, faceitem, hair, pants, shirt, skin, hatColor } = this.settings;
+  this.seed = `${base}${face}${faceitem}${hair}${pants}${shirt}${skin}${hatColor}`;
 }
 }
 customElements.define(RpgMe.tag, RpgMe);
