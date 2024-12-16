@@ -11,9 +11,8 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
   }
 
   constructor() {
-    super();
+    super();  
     this.title = "Customize Your RPG Character!";
-    this.seed= "00000000";
     this.settings = {
       base: 0, // 0 for no hair, 1 for hair
       face: 0,
@@ -29,6 +28,27 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
       fire: false,
       walking: false,
     };
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlSeed = urlParams.get('seed')
+    if (urlSeed){
+      this.seed =urlSeed;
+      const seedKeys = ["base", "face", "faceitem", "hair", "pants", "shirt", "skin", "hatColor"];
+      seedKeys.forEach((key, index) => {
+        this.settings[key] = parseInt(this.seed[index], 10) || 0; // Default to 0 if the seed is invalid
+    });
+    this.requestUpdate();
+    }
+    else{
+      this.seed= "00000000";
+      const seedKeys = ["base", "face", "faceitem", "hair", "pants", "shirt", "skin", "hatColor"];
+      seedKeys.forEach((key, index) => {
+        this.settings[key] = parseInt(this.seed[index], 10) || 0; // Default to 0 if the seed is invalid
+    });
+    this.requestUpdate();
+    }
+    console.log(this.seed);
+  
+    
   }
 
   static get properties() {
@@ -116,10 +136,29 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
         <label>Size: </label>
         ${this.wiredSlider("size", 100, 600)}
        
+       <button @click ="${this.convertSeed}">Convert to URL</button>
      </div> 
+
      </div>
         
     `;
+  }
+  
+  applySeedToSettings() {
+    const paddedSeed = this.seed.padStart(8, "0").slice(0, 8);
+    const values = paddedSeed.split("").map((v) => parseInt(v, 10));
+    [
+      this.settings.base,
+      this.settings.face,
+      this.settings.faceitem,
+      this.settings.hair,
+      this.settings.pants,
+      this.settings.shirt,
+      this.settings.skin,
+      this.settings.hatColor,
+    ] = values;
+  
+    this.requestUpdate(); // Ensure UI updates after applying settings
   }
 
   wiredSlider(property, min, max) {
@@ -143,7 +182,12 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
       @change="${(e) =>this.updateCharacter('base', e.target.checked ? 1 : 0)}">
   </wired-checkbox>
     `
-    
+  }
+
+  convertSeed(){
+     const link = `${location.origin}${location.pathname}?seed=${this.seed}&hat=${this.hat}&fire=${this.fire}&walking=${this.walking}&circle=${this.circle}`;
+    navigator.clipboard.writeText(link);
+    alert("Link copied to clipboard!");
   }
 
 
@@ -159,6 +203,7 @@ updateCharacter(property, value) {
 updateSeed() {
   const { base, face, faceitem, hair, pants, shirt, skin, hatColor } = this.settings;
   this.seed = `${base}${face}${faceitem}${hair}${pants}${shirt}${skin}${hatColor}`;
+  this.requestUpdate();
 }
 }
 customElements.define(RpgMe.tag, RpgMe);
