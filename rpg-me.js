@@ -15,6 +15,7 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
     this.title = "Customize Your RPG Character!";
     this.settings = {
       base: 0, // 0 for no hair, 1 for hair
+      accessories: 0,
       face: 0,
       faceitem: 0,
       hair: 0,
@@ -30,6 +31,12 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
     };
     const urlParams = new URLSearchParams(window.location.search);
     const urlSeed = urlParams.get('seed');
+    const urlHat = urlParams.get('hat')
+    
+    if(urlHat)
+    {
+      this.updateCharacter("hat",urlHat);
+    }
     if (urlParams.has('walking')) {
       this.settings.walking = urlParams.get('walking') === 'true';
     }
@@ -40,7 +47,7 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
 
     if (urlSeed){
       this.seed =urlSeed;
-      const seedKeys = ["base", "face", "faceitem", "hair", "pants", "shirt", "skin", "hatColor"];
+      const seedKeys = ["base", "accessories", "face", "faceitem", "hair", "pants", "shirt", "skin", "hatColor"];
       seedKeys.forEach((key, index) => {
         this.settings[key] = parseInt(this.seed[index], 10) || 0; // Default to 0 if the seed is invalid
     });
@@ -162,6 +169,7 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
           <rpg-character
             literalseed
             base="${this.settings.base}"
+            accessories="${this.settings.accessories}"
             face="${this.settings.face}"
             faceitem="${this.settings.faceitem}"
             hair="${this.settings.hair}"
@@ -179,6 +187,8 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
     <div class = options>
         <label>Has hair? </label>
         ${this.wiredCheckboxBase("base")}
+        <label>Accessories: </label>
+        ${this.wiredSlider("accessories", 0, 9)}
         <label>Face: </label>
         ${this.wiredSlider("face", 0, 5)}
         <label>Face Item: </label>
@@ -264,7 +274,7 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
 
 
   convertSeedToLink(){
-    const link = `${location.origin}${location.pathname}?seed=${this.seed}&walking=${this.settings.walking}&fire=${this.settings.fire}`;
+    const link = `${location.origin}${location.pathname}?seed=${this.seed}&hat=${this.settings.hat}&walking=${this.settings.walking}&fire=${this.settings.fire}`;
     navigator.clipboard.writeText(link);
     alert("Link copied.");
   }
@@ -279,8 +289,8 @@ updateCharacter(property, value) {
 }
 
 updateSeed() {
-  const { base, face, faceitem, hair, pants, shirt, skin, hatColor } = this.settings;
-  this.seed = `${base}${face}${faceitem}${hair}${pants}${shirt}${skin}${hatColor}`;
+  const { base, accessories, face, faceitem, hair, pants, shirt, skin, hatColor } = this.settings;
+  this.seed = `${base}${accessories}${face}${faceitem}${hair}${pants}${shirt}${skin}${hatColor}`;
 }
 
 
