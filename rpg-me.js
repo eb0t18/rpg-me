@@ -21,35 +21,43 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
       pants: 0,
       shirt: 0,
       skin: 0,
-      glasses: false,
       hatColor: 0,
       size: 200,
       name: "",
       fire: false,
       walking: false,
+      hat: "none"
     };
     const urlParams = new URLSearchParams(window.location.search);
-    const urlSeed = urlParams.get('seed')
+    const urlSeed = urlParams.get('seed');
+    const urlWalking = urlParams.get('walking');
+    const urlFire = urlParams.get('fire');
+
     if (urlSeed){
       this.seed =urlSeed;
       const seedKeys = ["base", "face", "faceitem", "hair", "pants", "shirt", "skin", "hatColor"];
       seedKeys.forEach((key, index) => {
         this.settings[key] = parseInt(this.seed[index], 10) || 0; // Default to 0 if the seed is invalid
     });
-    this.requestUpdate();
     }
     else{
       this.seed= "00000000";
       const seedKeys = ["base", "face", "faceitem", "hair", "pants", "shirt", "skin", "hatColor"];
       seedKeys.forEach((key, index) => {
         this.settings[key] = parseInt(this.seed[index], 10) || 0; // Default to 0 if the seed is invalid
+        
     });
-    this.requestUpdate();
-    }
-    console.log(this.seed);
-  
-    
   }
+   
+    if (urlWalking) {
+      this.settings.walking = true;
+    }
+
+    if (urlFire) {
+      this.settings.fire = true;
+    }
+    }  
+    
 
   static get properties() {
     return {
@@ -81,10 +89,15 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
         }
         wired-input,
         wired-checkbox,
-        wired-slider {
+        wired-slider,
+        wired-combo {
           display: block;
           margin-bottom: 20px;
           max-width: 200px;
+          opacity:1;
+        }
+
+        wired-item{
           opacity:1;
         }
         .options {
@@ -92,8 +105,51 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
           text-align: left;
         }
         rpg-character{
+        display: block;
         transition: width 0.3s ease, height 0.3s ease;
         }
+        .seed-container {
+          display:block;
+          text-align: center; 
+          margin-bottom: 10px; 
+          justify-content:center;
+       } 
+       button {
+        background-color: var(--button-background, #007bff); 
+        color: var(--button-text-color, #ffffff); 
+        border: none;
+        border-radius: 5px;
+        padding: 10px 15px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
+      }
+
+    button:hover {
+        background-color: var(--button-hover-background, #0056b3); 
+        transform: scale(1.05); 
+    }
+
+    button:active {
+        background-color: var(--button-active-background, #004494); 
+        transform: scale(0.95); 
+    }
+
+    button:focus {
+        outline: 2px solid var(--button-focus-outline, #ffcc00); 
+        outline-offset: 2px;
+    }
+
+
+
+        @media (prefers-color-scheme: dark) {
+        :host {
+        background-color: #121212;
+        color: #ffffff;
+       }
+}
       `,
     ];
   }
@@ -101,8 +157,11 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
   render() {
     return html`
       <div class="container">
-      <div class = "seed"><h2>${this.seed}</h2></div>
+      <div class = "seed-container"><h2>Seed: ${this.seed}</h2>
+      <div><a href="https://github.com/haxtheweb/issues/issues/1414" target="blank">Issue</a></div>
+      </div>
           <rpg-character
+            literalseed
             base="${this.settings.base}"
             face="${this.settings.face}"
             faceitem="${this.settings.faceitem}"
@@ -111,14 +170,16 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
             shirt="${this.settings.shirt}"
             skin="${this.settings.skin}"
             hatColor="${this.settings.hatColor}"
+            hat="${this.settings.hat}"
+            .fire="${this.settings.fire}"
+            .walking="${this.settings.walking}"
             style="width: ${this.settings.size}px; height: ${this.settings.size}px;"
           ></rpg-character>
 
 
-
     <div class = options>
         <label>Has hair? </label>
-        ${this.wiredCheckbox("base")}
+        ${this.wiredCheckboxBase("base")}
         <label>Face: </label>
         ${this.wiredSlider("face", 0, 5)}
         <label>Face Item: </label>
@@ -133,10 +194,16 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
         ${this.wiredSlider("skin", 0, 9)}
         <label>Hat Color: </label>
         ${this.wiredSlider("hatColor", 0, 9)}
+        <label>Hat: </label>
+        ${this.hatDropdown()}
         <label>Size: </label>
         ${this.wiredSlider("size", 100, 600)}
+        <label>Walking?: </label>
+        ${this.wiredCheckbox("walking")}
+        <label>On Fire?: </label>
+        ${this.wiredCheckbox("fire")}
        
-       <button @click ="${this.convertSeed}">Convert to URL</button>
+       <button @click ="${this.convertSeedToLink}">Convert to URL</button>
      </div> 
 
      </div>
@@ -144,22 +211,6 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
     `;
   }
   
-  applySeedToSettings() {
-    const paddedSeed = this.seed.padStart(8, "0").slice(0, 8);
-    const values = paddedSeed.split("").map((v) => parseInt(v, 10));
-    [
-      this.settings.base,
-      this.settings.face,
-      this.settings.faceitem,
-      this.settings.hair,
-      this.settings.pants,
-      this.settings.shirt,
-      this.settings.skin,
-      this.settings.hatColor,
-    ] = values;
-  
-    this.requestUpdate(); // Ensure UI updates after applying settings
-  }
 
   wiredSlider(property, min, max) {
     return html`
@@ -175,7 +226,7 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
     `;
   }
 
-  wiredCheckbox(property){
+  wiredCheckboxBase(property){
     return html`
   <wired-checkbox
       ?checked="${this.settings.base === 1}"
@@ -184,18 +235,46 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
     `
   }
 
-  convertSeed(){
-     const link = `${location.origin}${location.pathname}?seed=${this.seed}&hat=${this.hat}&fire=${this.fire}&walking=${this.walking}&circle=${this.circle}`;
-    navigator.clipboard.writeText(link);
-    alert("Link copied to clipboard!");
+  wiredCheckbox(property){
+    return html`
+  <wired-checkbox
+      ?checked="${this.settings[property]}"
+      @change="${(e) => this.updateCharacter(property, e.target.checked)}">
+  </wired-checkbox>
+    `
   }
 
+  hatDropdown(){
+    return html`
+    <wired-combo id="hat" .selected="${this.hat}"
+      @selected="${(e) => this.updateCharacter('hat', e.detail.selected)}">
+        <wired-item value="none">None</wired-item>
+        <wired-item value="bunny">Bunny</wired-item>
+        <wired-item value="coffee">Coffee</wired-item>
+        <wired-item value="construction">Construction</wired-item>
+        <wired-item value="cowboy">Cowboy</wired-item>
+        <wired-item value="education">Education</wired-item>
+        <wired-item value="knight">Knight</wired-item>
+        <wired-item value="ninja">Ninja</wired-item>
+        <wired-item value="party">Party</wired-item>
+        <wired-item value="pirate">Pirate</wired-item>
+        <wired-item value="watermelon">Watermelon</wired-item>
+      </wired-combo>
+                `
+  }
+
+
+  convertSeedToLink(){
+    const link = `${location.origin}${location.pathname}?seed=${this.seed}&walking=${this.settings.walking}&fire=${this.settings.fire}`;
+    navigator.clipboard.writeText(link);
+    alert("Link copied.");
+  }
 
 
 updateCharacter(property, value) {
   this.settings = { 
     ...this.settings, 
-    [property]: property === "size" ? parseInt(value, 10) : parseInt(value, 10) 
+    [property]: value
   };
   this.updateSeed();
 }
@@ -203,7 +282,10 @@ updateCharacter(property, value) {
 updateSeed() {
   const { base, face, faceitem, hair, pants, shirt, skin, hatColor } = this.settings;
   this.seed = `${base}${face}${faceitem}${hair}${pants}${shirt}${skin}${hatColor}`;
-  this.requestUpdate();
 }
+
+
 }
+
+
 customElements.define(RpgMe.tag, RpgMe);
