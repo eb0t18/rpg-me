@@ -1,4 +1,7 @@
-
+/**
+ * Copyright 2024 eb0t18
+ * @license Apache-2.0, see LICENSE for full text.
+ */
 import { LitElement, html, css } from "lit";
 import { DDDSuper } from "@haxtheweb/d-d-d/d-d-d.js";
 import { I18NMixin } from "@haxtheweb/i18n-manager/lib/I18NMixin.js";
@@ -78,6 +81,7 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
           font-family: var(--ddd-font-navigation);
           background-color:var(--ddd-theme-default-navy60);
         }
+
         .container {
           display: flex;
           flex-wrap: wrap;
@@ -85,11 +89,13 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
           align-items: flex-start;
           padding: 20px;
         }
+
         label {
           font-size: 20px;
           font-weight: bold;
           margin-bottom: var(--ddd-spacing-3);
         }
+
         wired-input,
         wired-checkbox,
         wired-slider,
@@ -103,6 +109,7 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
         wired-item{
           opacity:1;
         }
+
         .options {
           min-width: 200px;
           text-align: left;
@@ -110,19 +117,21 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
           background-color: var(--ddd-theme-default-navy40);
           border-radius: var(--ddd-radius-sm);
         }
+
         rpg-character{
         display: block;
         transition: width 0.3s ease, height 0.3s ease;
         margin: var(--ddd-spacing-1);
 
         }
-      
+
         .seed-container {
           display:block;
           text-align: center; 
           margin-bottom: 10px; 
           justify-content:center;
        } 
+
        button {
         background-color: var(--button-background, var(--ddd-theme-default-beaverBlue)); 
         color: var(--button-text-color, #ffffff); 
@@ -136,28 +145,26 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
       }
 
-    button:hover {
-        background-color: var(--button-hover-background, var(--ddd-theme-default-beeaver70)); 
-        transform: scale(1.05); 
-    }
+      button:hover {
+          background-color: var(--button-hover-background, var(--ddd-theme-default-beeaver70)); 
+          transform: scale(1.05); 
+      }
 
-    button:active {
-        background-color: var(--button-active-background, var(--ddd-theme-default-beaver80)); 
-        transform: scale(0.95); 
-    }
+      button:active {
+          background-color: var(--button-active-background, var(--ddd-theme-default-beaver80)); 
+          transform: scale(0.95); 
+      }
 
-    button:focus {
-        outline: 2px solid var(--button-focus-outline, #ffcc00); 
-        outline-offset: 2px;
-    }
+      button:focus {
+          outline: 2px solid var(--button-focus-outline, #ffcc00); 
+          outline-offset: 2px;
+      }
 
-
-
-        @media (prefers-color-scheme: dark) {
-        :host {
-        background-color: #121212;
-        color: #ffffff;
-       }
+      @media (prefers-color-scheme: dark) {
+      :host {
+      background-color: #121212;
+      color: #ffffff;
+      }
 }
       `,
     ];
@@ -186,7 +193,6 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
             ?circle="${this.settings.circle}"
             style="width: ${this.settings.size}px; height: ${this.settings.size}px;"
           ></rpg-character>
-
 
     <div class = options>
         <label>Has hair? </label>
@@ -226,22 +232,21 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
     `;
   }
   
-
-  wiredSlider(property, min, max) {
+  wiredSlider(setting, min, max) {
     return html`
       <div class="slider-container">
         <wired-slider
           min="${min}"
           max="${max}"
           step="1"
-          value="${this.settings[property]}"
-          @change="${(e) => this.updateCharacter(property, e.target.value)}"
+          value="${this.settings[setting]}"
+          @change="${(e) => this.updateCharacter(setting, e.target.value)}"
         ></wired-slider>
       </div>
     `;
   }
 
-  wiredCheckboxBase(property){
+  wiredCheckboxBase(setting){
     return html`
   <wired-checkbox
       ?checked="${this.settings.base === 1}"
@@ -250,11 +255,11 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
     `
   }
 
-  wiredCheckbox(property){
+  wiredCheckbox(setting){
     return html`
   <wired-checkbox
-      ?checked="${this.settings[property]}"
-      @change="${(e) => this.updateCharacter(property, e.target.checked)}">
+      ?checked="${this.settings[setting]}"
+      @change="${(e) => this.updateCharacter(setting, e.target.checked)}">
   </wired-checkbox>
     `
   }
@@ -286,21 +291,17 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
   }
 
 
-updateCharacter(property, value) {
+updateCharacter(setting, value) {
   this.settings = { 
     ...this.settings, 
-    [property]: value
+    [setting]: value
   };
   this.updateSeed();
 }
 
 updateSeed() {
-  const { base, accessories, face, faceitem, hair, pants, shirt, skin, hatColor } = this.settings;
+  const {base, accessories, face, faceitem, hair, pants, shirt, skin, hatColor } = this.settings;
   this.seed = `${base}${accessories}${face}${faceitem}${hair}${pants}${shirt}${skin}${hatColor}`;
 }
-
-
 }
-
-
 customElements.define(RpgMe.tag, RpgMe);
