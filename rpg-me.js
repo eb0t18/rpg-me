@@ -66,6 +66,7 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
         :host {
           display: block;
           font-family: var(--ddd-font-navigation);
+          background-color:var(--ddd-theme-default-navy60);
         }
         .container {
           display: flex;
@@ -95,11 +96,17 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
         .options {
           min-width: 200px;
           text-align: left;
+          padding: 10px;
+          background-color: var(--ddd-theme-default-navy40);
+          border-radius: var(--ddd-radius-sm);
         }
         rpg-character{
         display: block;
         transition: width 0.3s ease, height 0.3s ease;
+        margin: var(--ddd-spacing-1);
+
         }
+      
         .seed-container {
           display:block;
           text-align: center; 
@@ -107,7 +114,7 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
           justify-content:center;
        } 
        button {
-        background-color: var(--button-background, #007bff); 
+        background-color: var(--button-background, var(--ddd-theme-default-beaverBlue)); 
         color: var(--button-text-color, #ffffff); 
         border: none;
         border-radius: 5px;
@@ -120,12 +127,12 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
       }
 
     button:hover {
-        background-color: var(--button-hover-background, #0056b3); 
+        background-color: var(--button-hover-background, var(--ddd-theme-default-beeaver70)); 
         transform: scale(1.05); 
     }
 
     button:active {
-        background-color: var(--button-active-background, #004494); 
+        background-color: var(--button-active-background, var(--ddd-theme-default-beaver80)); 
         transform: scale(0.95); 
     }
 
@@ -150,7 +157,7 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
     return html`
       <div class="container">
       <div class = "seed-container"><h2>Seed: ${this.seed}</h2>
-      <div><a href="https://github.com/haxtheweb/issues/issues/1414" target="blank">Issue</a></div>
+      <div><a href="https://github.com/haxtheweb/issues/issues/1414" target="blank">Link to github</a></div>
       </div>
           <rpg-character
             literalseed
