@@ -30,8 +30,13 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
     };
     const urlParams = new URLSearchParams(window.location.search);
     const urlSeed = urlParams.get('seed');
-    const urlWalking = urlParams.get('walking');
-    const urlFire = urlParams.get('fire');
+    if (urlParams.has('walking')) {
+      this.settings.walking = urlParams.get('walking') === 'true';
+    }
+  
+    if (urlParams.has('fire')) {
+      this.settings.fire = urlParams.get('fire') === 'true';
+    }
 
     if (urlSeed){
       this.seed =urlSeed;
@@ -42,20 +47,7 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
     }
     else{
       this.seed= "00000000";
-      const seedKeys = ["base", "face", "faceitem", "hair", "pants", "shirt", "skin", "hatColor"];
-      seedKeys.forEach((key, index) => {
-        this.settings[key] = parseInt(this.seed[index], 10) || 0; // Default to 0 if the seed is invalid
-        
-    });
   }
-   
-    if (urlWalking) {
-      this.settings.walking = true;
-    }
-
-    if (urlFire) {
-      this.settings.fire = true;
-    }
     }  
     
 
