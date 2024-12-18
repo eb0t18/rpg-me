@@ -24,10 +24,10 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
       skin: 0,
       hatColor: 0,
       size: 200,
-      name: "",
       fire: false,
       walking: false,
-      hat: "none"
+      hat: "none",
+      circle: false
     };
     const urlParams = new URLSearchParams(window.location.search);
     const urlSeed = urlParams.get('seed');
@@ -43,6 +43,9 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
   
     if (urlParams.has('fire')) {
       this.settings.fire = urlParams.get('fire') === 'true';
+    }
+    if (urlParams.has('circle')) {
+      this.settings.circle = urlParams.get('circle') === 'true';
     }
 
     if (urlSeed){
@@ -178,8 +181,9 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
             skin="${this.settings.skin}"
             hatColor="${this.settings.hatColor}"
             hat="${this.settings.hat}"
-            .fire="${this.settings.fire}"
-            .walking="${this.settings.walking}"
+            ?fire="${this.settings.fire}"
+            ?walking="${this.settings.walking}"
+            ?circle="${this.settings.circle}"
             style="width: ${this.settings.size}px; height: ${this.settings.size}px;"
           ></rpg-character>
 
@@ -211,6 +215,8 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
         ${this.wiredCheckbox("walking")}
         <label>On Fire?: </label>
         ${this.wiredCheckbox("fire")}
+        <label>Circle: </label>
+        ${this.wiredCheckbox("circle")}
        
        <button @click ="${this.convertSeedToLink}">Convert to URL</button>
      </div> 
@@ -274,7 +280,7 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
 
 
   convertSeedToLink(){
-    const link = `${location.origin}${location.pathname}?seed=${this.seed}&hat=${this.settings.hat}&walking=${this.settings.walking}&fire=${this.settings.fire}`;
+    const link = `${location.origin}${location.pathname}?seed=${this.seed}&hat=${this.settings.hat}&walking=${this.settings.walking}&fire=${this.settings.fire}&circle=${this.settings.circle}`;
     navigator.clipboard.writeText(link);
     alert("Link copied.");
   }
