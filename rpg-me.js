@@ -88,14 +88,14 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
         label {
           font-size: 20px;
           font-weight: bold;
-          margin-bottom: 10px;
+          margin-bottom: var(--ddd-spacing-3);
         }
         wired-input,
         wired-checkbox,
         wired-slider,
         wired-combo {
           display: block;
-          margin-bottom: 20px;
+          margin-bottom: var(--ddd-spacing-3);
           max-width: 200px;
           opacity:1;
         }
@@ -106,7 +106,7 @@ export class RpgMe extends DDDSuper(I18NMixin(LitElement)) {
         .options {
           min-width: 200px;
           text-align: left;
-          padding: 10px;
+          padding: var(--ddd-spacing-5);
           background-color: var(--ddd-theme-default-navy40);
           border-radius: var(--ddd-radius-sm);
         }
